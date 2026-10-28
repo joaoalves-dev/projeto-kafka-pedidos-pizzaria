@@ -1,0 +1,28 @@
+@baseUrl = http://localhost:8080
+
+### Criar pedido
+POST {{baseUrl}}/api/v1/orders
+Content-Type: application/json
+
+{
+  "customerName": "João Silva",
+  "customerPhone": "19999999999",
+  "deliveryAddress": "Rua das Pizzas, 123",
+  "notes": "Sem cebola",
+  "items": [
+    { "pizzaName": "Calabresa", "size": "GRANDE", "quantity": 2, "unitPrice": 49.90 },
+    { "pizzaName": "Portuguesa", "size": "MEDIA", "quantity": 1, "unitPrice": 39.90 }
+  ]
+}
+
+### Listar pedidos
+GET {{baseUrl}}/api/v1/orders
+
+### Filtrar por status
+GET {{baseUrl}}/api/v1/orders?status=RECEIVED
+
+### Alterar status (substitua pelo UUID retornado ao criar)
+PATCH {{baseUrl}}/api/v1/orders/00000000-0000-0000-0000-000000000000/status
+Content-Type: application/json
+
+{ "status": "PREPARING" }
