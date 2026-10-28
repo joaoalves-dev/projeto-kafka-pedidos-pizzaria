@@ -1,0 +1,51 @@
+server:
+  port: ${SERVER_PORT:8080}
+spring:
+  application:
+    name: pizzaria-kafka
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/pizzaria}
+    username: ${DB_USERNAME:pizzaria}
+    password: ${DB_PASSWORD:pizzaria}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: pizzaria-order-events
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "br.com.pizzaria.*"
+        spring.json.value.default.type: br.com.pizzaria.orders.messaging.OrderCreatedEvent
+        spring.json.use.type.headers: false
+      enable-auto-commit: false
+    listener:
+      ack-mode: record
+app:
+  kafka:
+    topics:
+      order-created: pizzaria.orders.created.v1
+      order-status: pizzaria.orders.status.v1
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      probes:
+        enabled: true
